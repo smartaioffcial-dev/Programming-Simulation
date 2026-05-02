@@ -18,7 +18,7 @@
             background-color: #fff;
         }
 
-        /* CHẶN ĐIỆN THOẠI */
+        /* KIỂM TRA THIẾT BỊ (CHỈ CHO PC) */
         @media (max-width: 800px) {
             #main-app { display: none; }
             #mobile-blocker { display: flex !important; }
@@ -31,7 +31,7 @@
             text-align: center; z-index: 9999;
         }
 
-        /* GIAO DIỆN CHÍNH */
+        /* BỐ CỤC CHÍNH (ẢNH 2) */
         #main-app {
             display: flex; flex-direction: column; height: 100vh;
             background: linear-gradient(to bottom, #42e3f5, #ffffff);
@@ -45,7 +45,7 @@
 
         .workspace { display: flex; flex: 1; padding: 0 20px 20px; gap: 20px; overflow-y: auto; }
 
-        /* Sidebar */
+        /* THANH MENU BÊN TRÁI */
         .sidebar {
             width: 260px; background: var(--purple-sidebar);
             border: 3px solid black; border-radius: 35px;
@@ -53,13 +53,10 @@
             height: fit-content; position: sticky; top: 10px;
         }
 
-        /* NÚT BACK QUAN TRỌNG */
         .back-btn {
             width: 80px; background: #c9e6ff; border: 2px solid black;
             border-radius: 15px; cursor: pointer; font-weight: bold; padding: 5px;
-            transition: 0.2s;
         }
-        .back-btn:hover { background: #ffaaaa; }
 
         .menu-title { color: #ff3d3d; font-size: 45px; font-weight: bold; text-align: center; margin: 5px 0; }
 
@@ -68,27 +65,38 @@
             color: white; font-weight: bold; text-align: center; cursor: pointer;
         }
 
-        /* Editor */
+        /* KHU VỰC LẬP TRÌNH (Ô MÀU XÁM) */
         .editor-container {
             flex: 1; background: var(--dark-editor); border: 3px solid black;
             border-radius: 45px; padding: 30px; display: flex; flex-direction: column;
-            min-height: 600px;
+            min-height: 600px; cursor: text; position: relative;
         }
 
-        .beta-bg-text { font-size: 100px; font-weight: bold; text-align: center; color: black; margin: 0; }
+        /* Chữ BETA làm nền, không chặn click chuột */
+        .beta-bg-text { 
+            font-size: 100px; font-weight: bold; text-align: center; color: black; 
+            margin: 0; pointer-events: none; 
+            position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 1;
+        }
 
-        .status-line { background: var(--cyan-accent); height: 35px; width: 95%; border-radius: 20px; margin: 10px auto 25px; }
+        .status-line { 
+            background: var(--cyan-accent); height: 35px; width: 95%; 
+            border-radius: 20px; margin: 110px auto 25px; 
+            pointer-events: none; z-index: 1;
+        }
 
-        /* Ô gõ code tự giãn nở */
+        /* Ô NHẬP CODE (TỰ ĐỘNG DÀI RA) */
         #code-input {
             width: 100%; background: transparent; border: none; color: #fff;
-            font-family: 'Consolas', monospace; font-size: 18px;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 20px;
             resize: none; outline: none; line-height: 1.5; overflow: hidden;
+            z-index: 10; min-height: 400px;
         }
 
         .description-box {
             background: #27ae60; color: white; padding: 15px; border-radius: 40px;
-            font-size: 13px; text-align: center; margin-top: 30px; border: 2px solid black;
+            font-size: 13px; text-align: center; margin-top: auto; border: 2px solid black;
         }
     </style>
 </head>
@@ -104,7 +112,7 @@
 
         <div class="workspace">
             <aside class="sidebar">
-                <button class="back-btn" onclick="goBackHome()">Back →</button>
+                <button class="back-btn" onclick="location.href='index.html'">Back →</button>
                 
                 <div class="menu-title">MENU</div>
                 <div class="nav-btn" style="background:#4a69bd;">HTML</div>
@@ -117,21 +125,16 @@
                 </div>
             </aside>
 
-            <main class="editor-container">
+            <main class="editor-container" onclick="document.getElementById('code-input').focus()">
                 <div class="beta-bg-text">BETA</div>
                 <div class="status-line"></div>
-                <textarea id="code-input" placeholder="// Bắt đầu lập trình..." oninput="autoResize(this)"></textarea>
+                <textarea id="code-input" placeholder="// Nhập mã nguồn của bạn tại đây..." oninput="autoResize(this)"></textarea>
             </main>
         </div>
     </div>
 
     <script>
-        // Hàm quay về trang chủ
-        function goBackHome() {
-            window.location.href = 'index.html'; 
-        }
-
-        // Tự động giãn editor
+        // Tự động kéo dài vùng màu xám khi code dài ra
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
