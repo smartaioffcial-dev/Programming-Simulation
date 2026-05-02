@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAI - Internal Root</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace; overflow: hidden; }
+        #auth-gate { text-align: center; width: 100%; }
+        .pin-box { background: transparent; border: none; border-bottom: 4px solid #111; color: #00ff00; font-size: 60px; width: 250px; text-align: center; outline: none; letter-spacing: 15px; margin-top: 20px; }
+        #admin-workspace { display: none; width: 100%; height: 100%; flex-direction: column; padding: 10px; box-sizing: border-box; background: #050505; }
+        #editor { flex: 1; background: #000; color: #00ff00; border: 1px solid #222; padding: 15px; font-size: 18px; outline: none; border-radius: 10px; }
+        .status { font-size: 12px; color: #444; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
 
+    <div id="auth-gate">
+        <h1 id="device-msg" style="color: #222;">SYSTEM LOCKED</h1>
+        <div id="input-wrap" style="display: none;">
+            <p style="color: #00ff00; letter-spacing: 3px;">ENTER DEVICE PIN</p>
+            <input type="password" id="pin" class="pin-box" maxlength="6" autofocus>
+        </div>
+    </div>
+
+    <div id="admin-workspace">
+        <div class="status">DEVICE: SAMSUNG-A24 | SESSION: ENCRYPTED | GHOST: ACTIVE</div>
+        <textarea id="editor" placeholder="// Quyền năng Admin khởi chạy..."></textarea>
+        <button style="margin-top:10px; background:#111; color:#555; border:none; padding:10px;" onclick="location.href='index.html'">EXIT_SHADOW</button>
+    </div>
+
+    <script>
+        // 1. NHẬN DIỆN "CHỨNG MINH THƯ" SAMSUNG A24 CỦA BẠN
+        // Đoạn này kiểm tra xem có đúng là chip và dòng máy A24 đang truy cập không
+        const isMyPhone = /SM-A245|Samsung/i.test(navigator.userAgent);
+        
+        // 2. MÃ PIN ĐÃ ĐƯỢC "BĂM" (Thay đổi mã PIN điện thoại của bạn tại đây)
+        // Hiện tại đang để mặc định là '123456'. 
+        const MASTER_KEY = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+
+        window.onload = function() {
+            if (isMyPhone) {
+                // Nếu đúng là điện thoại bạn, mới hiện chỗ nhập PIN
+                document.getElementById('input-wrap').style.display = 'block';
+                document.getElementById('device-msg').style.color = '#004400';
+                document.getElementById('device-msg').innerText = "DEVICE RECOGNIZED";
+            } else {
+                // Máy lạ thì hiện màn hình chết
+                document.getElementById('device-msg').innerText = "403 ACCESS DENIED";
+            }
+        };
+
+        const pinInput = document.getElementById('pin');
+        pinInput.addEventListener('input', async (e) => {
+            if (e.target.value.length === 6) {
+                const hashed = await sha256(e.target.value);
+                if (hashed === MASTER_KEY) {
+                    document.getElementById('auth-gate').style.display = 'none';
+                    document.getElementById('admin-workspace').style.display = 'flex';
+                    console.clear();
+                } else {
+                    e.target.value = ''; // Sai thì xóa nhập lại
+                }
+            }
+        });
+
+        // Hàm mã hóa SHA-256 (Để giấu mã PIN thật của bạn)
+        async function sha256(str) {
+            const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // BẢO VỆ TUYỆT ĐỐI KHÔNG DẤU VẾT
+        window.oncontextmenu = () => true; 
+        setInterval(() => { if(document.getElementById('admin-workspace').style.display === 'flex') console.clear(); }, 50);
+    </script>
+</body>
+</html>
