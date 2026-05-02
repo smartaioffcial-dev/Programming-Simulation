@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SmartAI Programming Simulation</title>
     <style>
         :root {
@@ -10,33 +10,78 @@
             --purple-sidebar: #d178e3;
             --btn-gradient: linear-gradient(to bottom, #8e44ad, #e67e22, #f1c40f);
             --dark-gray: #4d4d4d;
+            --security-red: #ff3d3d;
         }
 
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
+            background: #000; /* Nền mặc định đen để chặn */
         }
 
-        /* --- MÀN HÌNH CHẶN ĐIỆN THOẠI --- */
+        /* =========================================
+           --- MÀN HÌNH CHẶN UY NGHIÊM (UPGRADED) ---
+           ========================================= */
         #mobile-blocker {
-            display: none;
+            display: none; /* Mặc định ẩn */
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: #000;
+            background-color: #000;
             color: #fff;
-            z-index: 9999;
+            z-index: 10000; /* Cao nhất */
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 20px;
+            padding: 40px;
+            box-sizing: border-box;
         }
 
-        /* --- CONTAINER CHÍNH --- */
-        #app-container { display: flex; width: 100%; height: 100%; }
+        /* Logo Bảo mật tự tạo (Dạng Khiên + Khóa) */
+        .security-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 40px;
+        }
+
+        /* Khối văn bản chặn căn giữa */
+        .block-text-content {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .block-title {
+            font-size: 32px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--security-red);
+            margin: 0 0 20px 0;
+            border-bottom: 2px solid var(--security-red);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .block-main-msg {
+            font-size: 19px;
+            line-height: 1.6;
+            margin: 0 0 15px 0;
+            font-weight: 500;
+        }
+
+        .block-sub-msg {
+            font-size: 15px;
+            color: #888;
+            margin: 0;
+            font-style: italic;
+        }
+
+        /* =========================================
+           --- CONTAINER CHÍNH (GIỮ NGUYÊN) ---
+           ========================================= */
+        #app-container { display: none; width: 100%; height: 100%; flex-direction: column; }
 
         /* --- GIAO DIỆN 1: SẢNH (LANDING PAGE) --- */
         #landing-page {
@@ -84,7 +129,7 @@
         #workspace-page {
             width: 100%; height: 100%;
             background: linear-gradient(to bottom, #42e3f5, #fff);
-            display: none; /* Mặc định ẩn */
+            display: none;
             flex-direction: column;
         }
 
@@ -116,21 +161,25 @@
         }
 
         .blue-line { background: #00bcd4; height: 35px; width: 90%; border-radius: 20px; margin-top: 20px; }
-
-        /* --- ĐIỀU KIỆN CHO ĐIỆN THOẠI (MEDIA QUERY) --- */
-        @media (max-width: 800px) {
-            #app-container { display: none !important; }
-            #mobile-blocker { display: flex !important; }
-        }
     </style>
 </head>
 <body>
 
     <div id="mobile-blocker">
-        <h1 style="font-size: 40px;">⚠️</h1>
-        <h2 style="text-transform: uppercase;">Thông báo</h2>
-        <p style="font-size: 20px; padding: 0 20px;">Thiết bị của bạn không đủ để hỗ trợ trang này.</p>
-        <p style="color: #666;">Vui lòng truy cập bằng Máy tính để tiếp tục.</p>
+        <svg class="security-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 7V12C3 15.55 5.84 18.84 12 22C18.16 18.84 21 15.55 21 12V7L12 2Z" fill="#ff3d3d" stroke="#fff" stroke-width="1.5"/>
+            <path d="M12 11V15M12 11V10C12 9.44772 12.4477 9 13 9H13.5C14.0523 9 14.5 9.44772 14.5 10V11" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="9.5" y="11" width="5" height="4" rx="1" fill="#fff"/>
+        </svg>
+
+        <div class="block-text-content">
+            <h1 class="block-title">Hệ thống bảo mật SmartAI</h1>
+            <p class="block-main-msg">
+                <b>Truy cập bị từ chối.</b><br>
+                Môi trường thực thi của bạn không đáp ứng các điều kiện bảo mật phần cứng tối thiểu.
+            </p>
+            <p class="block-sub-msg">Hành vi giả lập trình duyệt hoặc sử dụng thiết bị di động đã bị chặn đứng.<br>Vui lòng sử dụng máy tính PC/Laptop thực thụ.</p>
+        </div>
     </div>
 
     <div id="app-container">
@@ -180,6 +229,43 @@
     </div>
 
     <script>
+        function hardwareSecurityEnforced() {
+            const blocker = document.getElementById('mobile-blocker');
+            const container = document.getElementById('app-container');
+
+            // --- BỘ LỌC SIÊU GẮT (CHỐNG GIẢ LẬP PC) ---
+            
+            // 1. Kiểm tra cảm ứng thực (Điện thoại luôn có, PC hiếm khi có)
+            const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            
+            // 2. Kiểm tra GPU (Adreno/Mali/PowerVR là chip điện thoại)
+            let isMobileGPU = false;
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl');
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                // Siết chặt hơn: Bất cứ thứ gì có chữ 'Mobile' hay chip phổ biến là chặn
+                if (/Adreno|Mali|PowerVR|Apple GPU|Google GPU|NVIDIA Tegra|Mobile/i.test(renderer)) {
+                    isMobileGPU = true;
+                }
+            } catch (e) {}
+
+            // 3. Kiểm tra thông số màn hình vật lý (Điện thoại thường hẹp hơn 1024px)
+            const isSmallScreen = window.screen.width < 1024;
+
+            // NẾU DÍNH BẤT KỲ DẤU HIỆU NÀO CỦA ĐIỆN THOẠI -> CHẶN NGAY
+            if (isTouch || isMobileGPU || isSmallScreen) {
+                blocker.style.display = 'flex';
+                container.style.display = 'none';
+                document.body.style.background = "#000"; // Đảm bảo nền đen
+            } else {
+                blocker.style.display = 'none';
+                container.style.display = 'flex';
+                document.body.style.background = ""; // Để CSS gradient tự hiện
+            }
+        }
+
         function goToStep2() {
             document.getElementById('landing-page').style.display = 'none';
             document.getElementById('workspace-page').style.display = 'flex';
@@ -189,7 +275,10 @@
             document.getElementById('workspace-page').style.display = 'none';
             document.getElementById('landing-page').style.display = 'flex';
         }
+
+        // Chạy bảo mật ngay lập tức
+        window.onload = hardwareSecurityEnforced;
+        window.onresize = hardwareSecurityEnforced;
     </script>
 </body>
 </html>
-
