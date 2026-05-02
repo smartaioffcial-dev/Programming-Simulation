@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAI - Programming Workspace</title>
+    <style>
+        :root {
+            --purple-sidebar: #d178e3;
+            --dark-editor: #4d4d4d;
+            --cyan-accent: #00bcd4;
+        }
 
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+        }
+
+        /* CHẶN ĐIỆN THOẠI */
+        @media (max-width: 800px) {
+            #main-app { display: none; }
+            #mobile-blocker { display: flex !important; }
+        }
+
+        #mobile-blocker {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: #000; color: #fff;
+            flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; z-index: 9999;
+        }
+
+        /* GIAO DIỆN CHÍNH */
+        #main-app {
+            display: flex; flex-direction: column; height: 100vh;
+            background: linear-gradient(to bottom, #42e3f5, #ffffff);
+        }
+
+        .top-header {
+            background: #42e3f5; border: 3px solid black; border-radius: 50px;
+            margin: 10px 20px; padding: 12px; text-align: center;
+            font-size: 32px; font-weight: bold;
+        }
+
+        .workspace { display: flex; flex: 1; padding: 0 20px 20px; gap: 20px; overflow-y: auto; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px; background: var(--purple-sidebar);
+            border: 3px solid black; border-radius: 35px;
+            padding: 20px; display: flex; flex-direction: column; gap: 15px;
+            height: fit-content; position: sticky; top: 10px;
+        }
+
+        /* NÚT BACK QUAN TRỌNG */
+        .back-btn {
+            width: 80px; background: #c9e6ff; border: 2px solid black;
+            border-radius: 15px; cursor: pointer; font-weight: bold; padding: 5px;
+            transition: 0.2s;
+        }
+        .back-btn:hover { background: #ffaaaa; }
+
+        .menu-title { color: #ff3d3d; font-size: 45px; font-weight: bold; text-align: center; margin: 5px 0; }
+
+        .nav-btn {
+            padding: 12px; border-radius: 20px; border: 2px solid #2980b9;
+            color: white; font-weight: bold; text-align: center; cursor: pointer;
+        }
+
+        /* Editor */
+        .editor-container {
+            flex: 1; background: var(--dark-editor); border: 3px solid black;
+            border-radius: 45px; padding: 30px; display: flex; flex-direction: column;
+            min-height: 600px;
+        }
+
+        .beta-bg-text { font-size: 100px; font-weight: bold; text-align: center; color: black; margin: 0; }
+
+        .status-line { background: var(--cyan-accent); height: 35px; width: 95%; border-radius: 20px; margin: 10px auto 25px; }
+
+        /* Ô gõ code tự giãn nở */
+        #code-input {
+            width: 100%; background: transparent; border: none; color: #fff;
+            font-family: 'Consolas', monospace; font-size: 18px;
+            resize: none; outline: none; line-height: 1.5; overflow: hidden;
+        }
+
+        .description-box {
+            background: #27ae60; color: white; padding: 15px; border-radius: 40px;
+            font-size: 13px; text-align: center; margin-top: 30px; border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mobile-blocker">
+        <h1>⚠️ Thông báo</h1>
+        <p>Thiết bị của bạn không đủ để hỗ trợ trang này.</p>
+    </div>
+
+    <div id="main-app">
+        <div class="top-header">SmartAI Programming Simulation</div>
+
+        <div class="workspace">
+            <aside class="sidebar">
+                <button class="back-btn" onclick="goBackHome()">Back →</button>
+                
+                <div class="menu-title">MENU</div>
+                <div class="nav-btn" style="background:#4a69bd;">HTML</div>
+                <div class="nav-btn" style="background:#4a69bd;">JavaScript</div>
+                <div class="nav-btn" style="background:#27ae60;">Python</div>
+                <div class="nav-btn" style="background:linear-gradient(to right, #8e44ad, #d178e3); border:none;">CSS</div>
+                
+                <div class="description-box">
+                    The system tests your programming skills and creates simulations of how you program it. It can be static and cannot program motion.
+                </div>
+            </aside>
+
+            <main class="editor-container">
+                <div class="beta-bg-text">BETA</div>
+                <div class="status-line"></div>
+                <textarea id="code-input" placeholder="// Bắt đầu lập trình..." oninput="autoResize(this)"></textarea>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Hàm quay về trang chủ
+        function goBackHome() {
+            window.location.href = 'index.html'; 
+        }
+
+        // Tự động giãn editor
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+    </script>
+</body>
+</html>
