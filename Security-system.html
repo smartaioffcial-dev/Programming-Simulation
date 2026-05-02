@@ -1,1 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMARTAI - GLOBAL SECURITY</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #000; color: #ff3d3d;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Segoe UI', sans-serif; overflow: hidden;
+        }
 
+        .security-box {
+            text-align: center; border: 4px solid #ff3d3d;
+            padding: 50px; border-radius: 15px;
+            box-shadow: 0 0 40px red; width: 85%; max-width: 700px;
+        }
+
+        #alert-msg {
+            background: #ff3d3d; color: #000;
+            font-size: 35px; font-weight: bold;
+            padding: 15px; border-radius: 8px;
+            margin: 20px 0; text-transform: uppercase;
+        }
+
+        .sub-msg { color: #fff; font-size: 18px; opacity: 0.8; }
+        
+        /* Hiệu ứng nhấp nháy cảnh báo */
+        .scan-line {
+            width: 100%; height: 2px; background: red;
+            position: absolute; top: 0; left: 0;
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="scan-line"></div>
+    <div class="security-box">
+        <h1 style="font-size: 60px; margin: 0;">🚫</h1>
+        <div id="alert-msg">ĐANG KIỂM TRA QUỐC GIA...</div>
+        <div id="sub-msg" class="sub-msg">Hệ thống đang định vị địa chỉ truy cập trái phép...</div>
+    </div>
+
+    <script>
+        // Danh sách ngôn ngữ thông báo "KHÔNG THỂ THỰC HIỆN" theo mã quốc gia
+        const langMap = {
+            'VN': { main: 'KHÔNG THỂ THỰC HIỆN', sub: 'Cấm hoàn toàn truy cập API và Dữ liệu.' },
+            'US': { main: 'CANNOT BE EXECUTED', sub: 'API and Data access are strictly prohibited.' },
+            'CN': { main: '无法执行', sub: '严禁访问 API 和数据。' },
+            'RU': { main: 'НЕВОЗМОЖНО ВЫПОЛНИТЬ', sub: 'Доступ к API и данным строго cтрого запрещен.' },
+            'JP': { main: '実行できません', sub: 'APIおよびデータへのアクセスは固く禁じられています。' },
+            'KR': { main: '실행할 수 없음', sub: 'API 및 데이터 액세스가 엄격히 금지됩니다.' },
+            'FR': { main: 'IMPOSSIBLE À EXÉCUTER', sub: 'L\'accès aux API et aux données est strictement interdit.' },
+            'DE': { main: 'KANN NICHT AUSGEFÜHRT WERDEN', sub: 'Der Zugriff auf API und Daten ist strengstens untersagt.' }
+        };
+
+        // Hàm lấy vị trí dựa trên IP
+        async function getHackerLanguage() {
+            try {
+                // Sử dụng API miễn phí để lấy mã quốc gia (ISO 3166-1 alpha-2)
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                const countryCode = data.country_code;
+
+                const message = langMap[countryCode] || langMap['US']; // Mặc định là tiếng Anh nếu quốc gia lạ
+                
+                document.getElementById('alert-msg').innerText = message.main;
+                document.getElementById('sub-msg').innerText = message.sub;
+                
+            } catch (error) {
+                // Nếu hacker chặn fetch, hiện tiếng Anh mặc định
+                document.getElementById('alert-msg').innerText = "ACTION DENIED";
+                document.getElementById('sub-msg').innerText = "Global Security Protocol Active.";
+            }
+        }
+
+        // Chạy kiểm tra ngay lập tức
+        getHackerLanguage();
+
+        // BẢO MẬT CỨNG: Chặn chuột và F12 như cũ
+        window.oncontextmenu = () => false;
+        document.onkeydown = (e) => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
+        };
+        setInterval(() => { debugger; }, 50);
+    </script>
+</body>
+</html>
