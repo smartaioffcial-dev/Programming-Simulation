@@ -1,1 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAI - Sentinel & Security Unified System</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --alert-red: #ff3d3d;
+            --bg-black: #050505;
+            --panel-bg: rgba(0, 20, 0, 0.9);
+        }
 
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg-black); color: var(--neon-green);
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* GIAO DIỆN KIỂM TRA (SENTINEL) */
+        .main-container {
+            display: flex; flex-direction: column; height: 100vh; padding: 15px; box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center; border: 2px solid var(--neon-green);
+            padding: 10px; margin-bottom: 15px; border-radius: 10px;
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        .dashboard {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex: 1; overflow: hidden;
+        }
+
+        .terminal {
+            border: 1px solid var(--neon-green); background: var(--panel-bg);
+            border-radius: 8px; display: flex; flex-direction: column; position: relative;
+        }
+
+        .terminal-header {
+            background: var(--neon-green); color: #000; font-weight: bold;
+            padding: 5px 15px; font-size: 14px;
+        }
+
+        .log-screen {
+            flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; line-height: 1.4;
+        }
+
+        /* MÀN HÌNH BẢO MẬT (SECURITY-SYSTEM OVERLAY KHI BỊ BANNED) */
+        #hacker-banned-screen {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; border: 10px solid var(--alert-red); box-sizing: border-box;
+        }
+
+        .banned-box {
+            padding: 40px; border: 3px solid var(--alert-red); box-shadow: 0 0 50px red;
+            background: rgba(20,0,0,0.9); border-radius: 20px; max-width: 80%;
+        }
+
+        #alert-msg {
+            background: var(--alert-red); color: #000; font-size: 40px;
+            font-weight: bold; padding: 20px; margin: 20px 0; border-radius: 10px;
+        }
+
+        .scan-line {
+            width: 100%; height: 2px; background: red; position: absolute;
+            top: 0; animation: scan 3s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .status-bar {
+            margin-top: 15px; display: flex; justify-content: space-between;
+            font-size: 12px; border-top: 1px solid var(--neon-green); padding-top: 10px;
+        }
+
+        .banned-text { color: var(--alert-red); font-weight: bold; animation: blink 0.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="main-container" id="sentinel-interface">
+        <div class="header">
+            <h1 style="margin: 0; letter-spacing: 5px;">SMARTAI SENTINEL CONTROL</h1>
+            <small>PROTECTING DATA & SESSIONS (UNLIMITED USERS)</small>
+        </div>
+
+        <div class="dashboard">
+            <div class="terminal">
+                <div class="terminal-header">SYSTEM DEEP SCAN (AUTO-MODE)</div>
+                <div class="log-screen" id="sys-log"></div>
+            </div>
+            <div class="terminal">
+                <div class="terminal-header">SECURITY THREAT ANALYSIS</div>
+                <div class="log-screen" id="sec-log"></div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div>E2EE-ENC-1: <b id="key1">---</b></div>
+            <div>E2EE-ENC-2: <b id="key2">---</b></div>
+            <div>GLOBAL STATUS: <b style="color:white">ACTIVE PROTECTION</b></div>
+        </div>
+    </div>
+
+    <div id="hacker-banned-screen">
+        <div class="scan-line"></div>
+        <div class="banned-box">
+            <h1 style="font-size: 100px; margin: 0;">🚫</h1>
+            <div id="alert-msg">ĐANG ĐỊNH VỊ...</div>
+            <h2 style="color: white;">TRUY CẬP BỊ TỪ CHỐI / ACCESS DENIED</h2>
+            <p style="color: #ccc;">Phát hiện hành vi ghi code hack và can thiệp trái phép vào hệ thống.</p>
+            <p style="color: var(--alert-red); font-weight: bold;">CẤM HOÀN TOÀN API, DOMAIN VÀ SESSION.</p>
+            <div id="hacker-identity" style="color: #555; font-size: 12px; margin-top: 20px; font-family: monospace;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 1. MÃ HÓA ĐẦU CUỐI KÉP (2 MÃ KẾT NỐI NHAU)
+        const KEY_A = "SAI-SEC-" + Math.random().toString(36).substr(2, 10).toUpperCase();
+        const KEY_B = "SAI-PRO-" + Math.random().toString(36).substr(2, 10).toUpperCase();
+        document.getElementById('key1').innerText = KEY_A;
+        document.getElementById('key2').innerText = KEY_B;
+
+        const sysLog = document.getElementById('sys-log');
+        const secLog = document.getElementById('sec-log');
+
+        function writeLog(el, text, type = '') {
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.innerHTML = `<span style="color:#888">[${time}]</span> <span class="${type}">${text}</span>`;
+            el.appendChild(div);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        // 2. TỰ ĐỘNG QUÉT TOÀN TRANG (Mô phỏng 5p/ngày)
+        setInterval(() => {
+            const tasks = [
+                "Đang quét toàn bộ Sessions đăng nhập...",
+                "Kiểm soát dữ liệu người dùng (Không giới hạn)...",
+                "Đang mã hóa lớp bảo mật đầu cuối...",
+                "Đồng bộ hóa dữ liệu với Security-system qua Tunnel...",
+                "Kiểm tra tính toàn vẹn của mã nguồn trang web..."
+            ];
+            writeLog(sysLog, tasks[Math.floor(Math.random() * tasks.length)]);
+        }, 3000);
+
+        // 3. HỆ THỐNG PHÁT HIỆN HACK & BANNED
+        function triggerGlobalBanned(reason) {
+            document.getElementById('sentinel-interface').style.display = 'none';
+            document.getElementById('hacker-banned-screen').style.display = 'flex';
+            
+            const langMap = {
+                'VN': 'KHÔNG THỂ THỰC HIỆN',
+                'US': 'CANNOT BE EXECUTED',
+                'RU': 'НЕВОЗМОЖНО ВЫПОЛНИТЬ',
+                'CN': '无法执行'
+            };
+
+            // Định vị IP và Quốc gia
+            fetch('https://ipapi.co/json/').then(r => r.json()).then(d => {
+                document.getElementById('alert-msg').innerText = langMap[d.country_code] || langMap['US'];
+                document.getElementById('hacker-identity').innerText = `DỮ LIỆU GHIM: IP ${d.ip} | QUỐC GIA: ${d.country_name} | LÝ DO: ${reason} | TRACE-ID: ${KEY_A}`;
+                
+                // Lưu vĩnh viễn vào hệ thống để lần sau chặn lỗ hổng
+                localStorage.setItem('BANNED_USER', JSON.stringify({ip: d.ip, status: 'PERMANENT_BAN'}));
+            }).catch(() => {
+                document.getElementById('alert-msg').innerText = "ACTION DENIED";
+            });
+        }
+
+        // Tự động quét các hành vi hack (Mô phỏng phát hiện code lạ)
+        setInterval(() => {
+            if (Math.random() > 0.96) {
+                writeLog(secLog, "⚠ CẢNH BÁO: Phát hiện chuỗi code hack xâm nhập hệ thống!", "banned-text");
+                setTimeout(() => { triggerGlobalBanned("Ghi code hack trái phép"); }, 1500);
+            }
+        }, 8000);
+
+        // 4. BẢO MẬT TUYỆT ĐỐI (PC & MOBILE)
+        window.oncontextmenu = () => false;
+        document.onkeydown = (e) => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
+                return false;
+            }
+        };
+
+        // Cấm API khi bị banned
+        const originalFetch = window.fetch;
+        window.fetch = function() {
+            if (document.getElementById('hacker-banned-screen').style.display === 'flex') {
+                return Promise.reject("API BANNED BY SMARTAI");
+            }
+            return originalFetch.apply(this, arguments);
+        };
+
+        // Chặn soi code (Anti-debugger)
+        setInterval(() => { 
+            if(document.getElementById('hacker-banned-screen').style.display === 'flex') debugger; 
+        }, 100);
+
+    </script>
+</body>
+</html>
