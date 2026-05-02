@@ -11,27 +11,17 @@
             --cyan-accent: #00bcd4;
         }
 
-        body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            font-family: Arial, sans-serif;
-            background-color: #fff;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
 
-        /* KIỂM TRA THIẾT BỊ (CHỈ CHO PC) */
-        @media (max-width: 800px) {
-            #main-app { display: none; }
-            #mobile-blocker { display: flex !important; }
-        }
-
+        /* MÀN HÌNH CHẶN CỨNG */
         #mobile-blocker {
             display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: #000; color: #fff;
-            flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; z-index: 9999;
+            width: 100vw; height: 100vh; background: #000; color: #fff;
+            z-index: 10000; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
         }
 
-        /* BỐ CỤC CHÍNH (ẢNH 2) */
+        /* GIAO DIỆN CHÍNH */
         #main-app {
             display: flex; flex-direction: column; height: 100vh;
             background: linear-gradient(to bottom, #42e3f5, #ffffff);
@@ -39,106 +29,96 @@
 
         .top-header {
             background: #42e3f5; border: 3px solid black; border-radius: 50px;
-            margin: 10px 20px; padding: 12px; text-align: center;
-            font-size: 32px; font-weight: bold;
+            margin: 10px 20px; padding: 12px; text-align: center; font-size: 32px; font-weight: bold;
         }
 
-        .workspace { display: flex; flex: 1; padding: 0 20px 20px; gap: 20px; overflow-y: auto; }
+        .workspace { display: flex; flex: 1; padding: 0 20px 20px; gap: 20px; }
 
-        /* THANH MENU BÊN TRÁI */
         .sidebar {
             width: 260px; background: var(--purple-sidebar);
-            border: 3px solid black; border-radius: 35px;
+            border: 3px solid black; border-radius: 40px;
             padding: 20px; display: flex; flex-direction: column; gap: 15px;
-            height: fit-content; position: sticky; top: 10px;
         }
 
-        .back-btn {
-            width: 80px; background: #c9e6ff; border: 2px solid black;
-            border-radius: 15px; cursor: pointer; font-weight: bold; padding: 5px;
-        }
+        .back-btn { width: 80px; background: #c9e6ff; border: 2px solid black; border-radius: 15px; cursor: pointer; font-weight: bold; }
 
         .menu-title { color: #ff3d3d; font-size: 45px; font-weight: bold; text-align: center; margin: 5px 0; }
 
-        .nav-btn {
-            padding: 12px; border-radius: 20px; border: 2px solid #2980b9;
-            color: white; font-weight: bold; text-align: center; cursor: pointer;
-        }
+        .nav-btn { padding: 12px; border-radius: 20px; border: 2px solid #2980b9; color: white; font-weight: bold; text-align: center; }
 
-        /* KHU VỰC LẬP TRÌNH (Ô MÀU XÁM) */
         .editor-container {
             flex: 1; background: var(--dark-editor); border: 3px solid black;
-            border-radius: 45px; padding: 30px; display: flex; flex-direction: column;
-            min-height: 600px; cursor: text; position: relative;
+            border-radius: 50px; padding: 30px; display: flex; flex-direction: column;
+            position: relative; cursor: text;
         }
 
-        /* Chữ BETA làm nền, không chặn click chuột */
         .beta-bg-text { 
             font-size: 100px; font-weight: bold; text-align: center; color: black; 
-            margin: 0; pointer-events: none; 
-            position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 1;
+            position: absolute; top: 30px; left: 50%; transform: translateX(-50%); 
+            z-index: 1; pointer-events: none; opacity: 0.7;
         }
 
         .status-line { 
             background: var(--cyan-accent); height: 35px; width: 95%; 
-            border-radius: 20px; margin: 110px auto 25px; 
-            pointer-events: none; z-index: 1;
+            border-radius: 20px; margin: 110px auto 20px; z-index: 1;
         }
 
-        /* Ô NHẬP CODE (TỰ ĐỘNG DÀI RA) */
         #code-input {
             width: 100%; background: transparent; border: none; color: #fff;
-            font-family: 'Consolas', 'Courier New', monospace; font-size: 20px;
-            resize: none; outline: none; line-height: 1.5; overflow: hidden;
-            z-index: 10; min-height: 400px;
+            font-family: 'Consolas', monospace; font-size: 20px;
+            resize: none; outline: none; line-height: 1.5; z-index: 10; flex: 1;
         }
 
-        .description-box {
-            background: #27ae60; color: white; padding: 15px; border-radius: 40px;
-            font-size: 13px; text-align: center; margin-top: auto; border: 2px solid black;
-        }
+        .description-box { background: #27ae60; color: white; padding: 15px; border-radius: 35px; border: 2px solid black; font-size: 13px; text-align: center; margin-top: auto; }
     </style>
 </head>
 <body>
 
     <div id="mobile-blocker">
-        <h1>⚠️ Thông báo</h1>
-        <p>Thiết bị của bạn không đủ để hỗ trợ trang này.</p>
+        <h1 style="font-size: 60px;">⚠️</h1>
+        <h2>THIẾT BỊ KHÔNG HỖ TRỢ</h2>
+        <p>Hệ thống nhận diện bạn đang dùng Điện thoại/Máy tính bảng.</p>
+        <p>Vui lòng dùng <b>Máy tính thực sự</b> để truy cập.</p>
     </div>
 
     <div id="main-app">
         <div class="top-header">SmartAI Programming Simulation</div>
-
         <div class="workspace">
             <aside class="sidebar">
                 <button class="back-btn" onclick="location.href='index.html'">Back →</button>
-                
                 <div class="menu-title">MENU</div>
                 <div class="nav-btn" style="background:#4a69bd;">HTML</div>
                 <div class="nav-btn" style="background:#4a69bd;">JavaScript</div>
                 <div class="nav-btn" style="background:#27ae60;">Python</div>
                 <div class="nav-btn" style="background:linear-gradient(to right, #8e44ad, #d178e3); border:none;">CSS</div>
-                
-                <div class="description-box">
-                    The system tests your programming skills and creates simulations of how you program it. It can be static and cannot program motion.
-                </div>
+                <div class="description-box">The system tests your programming skills...</div>
             </aside>
 
             <main class="editor-container" onclick="document.getElementById('code-input').focus()">
                 <div class="beta-bg-text">BETA</div>
                 <div class="status-line"></div>
-                <textarea id="code-input" placeholder="// Nhập mã nguồn của bạn tại đây..." oninput="autoResize(this)"></textarea>
+                <textarea id="code-input" placeholder="// Gõ code tại đây..."></textarea>
             </main>
         </div>
     </div>
 
     <script>
-        // Tự động kéo dài vùng màu xám khi code dài ra
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
+        function protectWeb() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+            const isSmallScreen = window.innerWidth <= 1024;
+
+            // Nếu là thiết bị di động HOẶC màn hình quá nhỏ thì chặn
+            if (isMobile || isSmallScreen) {
+                document.getElementById('main-app').style.display = 'none';
+                document.getElementById('mobile-blocker').style.display = 'flex';
+            }
         }
+
+        // Chạy ngay khi mở
+        protectWeb();
+        // Kiểm tra lại nếu người dùng cố tình thay đổi kích thước trình duyệt
+        window.onresize = protectWeb;
     </script>
 </body>
 </html>
