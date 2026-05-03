@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART-AI MANAGER - CONTROL PANEL</title>
+    <title>SMART-AI MANAGER</title>
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #2e59d9 0%, #4e73df 30%, #bc6fd1 70%, #d955c4 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             color: black; display: flex; flex-direction: column; align-items: center; overflow: hidden;
         }
 
@@ -28,16 +28,10 @@
         .btn-group { margin-top: 25px; display: flex; gap: 20px; }
         .btn {
             padding: 10px 22px; border-radius: 12px; border: 1px solid #999; background: #e8e8e8;
-            font-weight: 900; cursor: pointer; font-size: 16px; box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+            font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
         }
         .btn-banned { color: #ff0000; }
         .btn-unban { color: #ff5f5f; }
-        
-        #system-alert {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.9); color: #00ff41; padding: 15px 30px; 
-            border-radius: 8px; font-weight: bold; display: none; border: 1px solid #00ff41;
-        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -49,10 +43,10 @@
     </div>
 
     <div class="user-info-panel">
-        <div class="info-row"><span class="label">User name:</span><span class="value">SmartAI_Admin_Beta</span></div>
-        <div class="info-row"><span class="label">Time account create:</span><span class="value" id="ms-clock">00/00/0000 00:00:00:000</span></div>
-        <div class="info-row"><span class="label">Email/Phone:</span><span class="value">admin.security@smartai.vn</span></div>
-        <div class="info-row"><span class="label">Country:</span><span class="value">Vietnam (VN)</span></div>
+        <div class="info-row"><span class="label">User name:</span><span>SmartAI_Admin_Beta</span></div>
+        <div class="info-row"><span class="label">Time account create:</span><span id="ms-clock">00/00/0000 00:00:00:000</span></div>
+        <div class="info-row"><span class="label">Email/Phone:</span><span>admin.security@smartai.vn</span></div>
+        <div class="info-row"><span class="label">Country:</span><span id="user-country">Đang truy quét...</span></div>
 
         <div class="btn-group">
             <button class="btn btn-banned" onclick="execBanned()">Banned</button>
@@ -60,51 +54,43 @@
         </div>
     </div>
 
-    <div id="system-alert"></div>
-
     <script>
-        // --- BẢO MẬT CHÍNH PHỦ TỰ ĐỘNG ---
-        (function() {
-            // Nếu không phải "Chủ nhân" (người sở hữu link Github này hoặc máy đã lưu Token)
-            // thì tự động đá văng về trang chính
-            const isOwner = localStorage.getItem('IS_SMARTAI_LEADER') === 'TRUE';
-            
-            // Mẹo: Lần đầu bạn chạy file này, hãy gõ thêm ?admin=true vào sau link web
-            // Ví dụ: wedsite-quan-li.html?admin=true để hệ thống nhận diện bạn mãi mãi
-            if (window.location.search.includes('admin=true')) {
-                localStorage.setItem('IS_SMARTAI_LEADER', 'TRUE');
-            }
-
-            if (!isOwner && !window.location.search.includes('admin=true')) {
+        // 1. CHỐT CHẶN BẢO MẬT: CHỈ CÓ ?admin=true MỚI VÀO ĐƯỢC
+        (function checkSecurity() {
+            const urlParams = new URLSearchParams(window.location.search);
+            // Nếu link dell có đuôi ?admin=true thì đá văng về trang chủ ngay lập tức
+            if (urlParams.get('admin') !== 'true') {
                 window.location.replace("https://your-github-username.github.io/Programming-Simulation");
+                document.body.innerHTML = ""; // Xóa trắng trang luôn cho gắt
             }
         })();
 
-        // ĐỒNG HỒ MILI-GIÂY CỰC GẮT
+        // 2. TỰ ĐỘNG LẤY QUỐC GIA (DELL KHÓA CHẾT)
+        fetch('https://ipapi.co/json/').then(r => r.json()).then(d => {
+            document.getElementById('user-country').innerText = d.country_name || "Vietnam (VN)";
+        }).catch(() => { document.getElementById('user-country').innerText = "Vietnam (VN)"; });
+
+        // 3. ĐỒNG HỒ MILI-GIÂY CHẠY XÉ GIÓ
         setInterval(() => {
             const now = new Date();
             const timeStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}:${String(now.getMilliseconds()).padStart(3,'0')}`;
             document.getElementById('ms-clock').innerText = timeStr;
         }, 1);
 
+        // 4. QUYỀN SINH SÁT
         function execBanned() {
-            if(confirm("XÁC NHẬN: Xóa toàn bộ quyền truy cập của tài khoản này?")) {
+            if(confirm("Xác Nhận Lệnh Banned?")) {
                 localStorage.setItem('BANNED_USER', 'TRUE');
-                triggerAlert("CRITICAL: TÀI KHOẢN ĐÃ BỊ LOẠI BỎ.");
+                alert("Đã ghim lệnh Banned vĩnh viễn lên hệ thống!");
             }
         }
 
         function execUnban() {
             localStorage.removeItem('BANNED_USER');
-            triggerAlert("SUCCESS: TÀI KHOẢN ĐÃ ĐƯỢC PHỤC HỒI.");
+            alert("Unban successfully!");
         }
 
-        function triggerAlert(m) {
-            const a = document.getElementById('system-alert');
-            a.innerText = ">> " + m; a.style.display = 'block';
-            setTimeout(() => a.style.display = 'none', 3000);
-        }
-
+        // CHỐNG SOI CODE
         window.oncontextmenu = () => false;
         document.onkeydown = (e) => { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false; };
     </script>
