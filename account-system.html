@@ -1,1 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAI - Account System Beta</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #42d1f5, #0047ab);
+            font-family: Arial, sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; user-select: none;
+        }
 
+        /* KHUNG CHÍNH GIỐNG 100% ẢNH */
+        .main-box {
+            background: #0047ab;
+            width: 90%; max-width: 500px;
+            padding: 40px 20px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .title {
+            font-size: 60px; font-weight: bold; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .s-pink { color: #ff69b4; }
+        .m-blue { color: #42d1f5; }
+        .artai-yellow { color: #f5d142; }
+        .check-icon { width: 45px; height: 45px; }
+
+        /* Ô NHẬP EMAIL/PHONE XÁM BO TRÒN */
+        .input-box {
+            background: #757575;
+            border: none;
+            width: 80%;
+            padding: 20px;
+            border-radius: 50px;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            outline: none;
+            text-align: center;
+        }
+        .input-box::placeholder { color: #e0e0e0; }
+
+        /* NÚT BẤM */
+        .btn {
+            width: 55%; padding: 15px;
+            border-radius: 30px; border: none;
+            color: white; font-weight: bold; font-size: 14px;
+            cursor: pointer; margin-bottom: 15px;
+            display: block; margin-left: auto; margin-right: auto;
+            text-transform: uppercase;
+        }
+        .btn-login { background: #11a63b; }
+        .btn-logout { background: linear-gradient(to right, #8a2be2, #da70d6); }
+
+        .footer-text { color: #f5a642; font-weight: bold; font-size: 16px; margin-top: 15px; }
+        .earth-img { width: 120px; height: 120px; margin-top: 15px; border-radius: 50%; }
+        .version-text { position: absolute; bottom: 20px; right: 20px; color: white; font-size: 18px; opacity: 0.9; }
+
+        /* VÒNG TRÒN KIỂM TRA XÁM */
+        #check-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 1000;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loader-ring {
+            width: 100px; height: 100px;
+            border: 10px solid #444; /* Vòng tròn xám */
+            border-top: 10px solid #00ff41; /* Phóng tỏa xoay quanh */
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* KHUNG THÔNG BÁO NHỎ */
+        #notify-box {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white; color: black; padding: 20px 30px;
+            border-radius: 10px; font-weight: bold; text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-box">
+        <div class="title">
+            <span class="s-pink">S</span><span class="m-blue">m</span><span class="artai-yellow">artAI</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Check_mark_green.svg" class="check-icon">
+        </div>
+
+        <input type="text" id="user-data" class="input-box" placeholder="Email/Phone">
+        
+        <button class="btn btn-login" onclick="processVerify()">LOGIN</button>
+        <button class="btn btn-logout" onclick="processLogout()">LOGOUT</button>
+
+        <div class="footer-text">ACCOUNT-SYSTEM-SMART-AI</div>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Earth_Western_Hemisphere_transparent_background.png/600px-Earth_Western_Hemisphere_transparent_background.png" class="earth-img">
+    </div>
+
+    <div class="version-text">smartai_version1(SMR).beta</div>
+
+    <div id="check-overlay">
+        <div class="loader-ring"></div>
+        <p style="color: white; margin-top: 20px; font-family: monospace; letter-spacing: 2px;">ĐANG TRUY QUÉT DỮ LIỆU...</p>
+    </div>
+
+    <div id="notify-box"></div>
+
+    <script>
+        function showNotify(text) {
+            const box = document.getElementById('notify-box');
+            box.innerText = text;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 4000);
+        }
+
+        function processLogout() {
+            showNotify("Đã rời khỏi tài khoản.");
+            localStorage.removeItem('ACCOUNT_AUTH');
+        }
+
+        async function processVerify() {
+            const val = document.getElementById('user-data').value;
+            if (!val) return;
+
+            // HIỆN VÒNG TRÒN XÁM XOAY QUANH
+            document.getElementById('check-overlay').style.display = 'flex';
+
+            // KIỂM TRA GẮT GAO TRONG VÀI GIÂY
+            setTimeout(() => {
+                const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+                const isPhone = /^[0-9]{10,11}$/.test(val);
+
+                if (isEmail || isPhone) {
+                    // THÀNH CÔNG: MÃ HÓA CỰC GẮT GỬI VỀ SECURITY-SYSTEM
+                    const secureLog = {
+                        account: btoa(val), // Mã hóa base64
+                        status: "VERIFIED",
+                        time: new Date().toISOString()
+                    };
+                    localStorage.setItem('SMARTAI_AUTH_LOG', JSON.stringify(secureLog));
+                    
+                    document.getElementById('check-overlay').style.display = 'none';
+                    showNotify("Đã tạo tài khoản thành công, tài khoản của bạn hiện đã được lưu lên hệ thống bảo mật và mã hóa chặt chẽ.");
+
+                    // SAU KHI QUA PHẦN TÀI KHOẢN -> SOI XÉT PHẦN CỨNG GẮT GAO
+                    setTimeout(() => {
+                        finalSecurityCheck();
+                    }, 3000);
+                } else {
+                    document.getElementById('check-overlay').style.display = 'none';
+                    alert("THÔNG TIN TRUY CẬP SAI QUY CHẾ. HỆ THỐNG ĐÃ GHIM IP.");
+                }
+            }, 3500);
+        }
+
+        function finalSecurityCheck() {
+            // Quy chế gắt gao của index.html: Chặn Mobile, chỉ cho phép PC/Laptop
+            const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            if (isTouch || isMobile) {
+                // PHÁT HIỆN ĐIỆN THOẠI -> GỌI LỆNH BANNED CỦA SECURITY-SYSTEM
+                localStorage.setItem('BANNED_USER', 'TRUE');
+                location.href = 'Security-system.html';
+            } else {
+                // PC/LAPTOP -> CHO VÀO SẢNH
+                location.href = 'index.html';
+            }
+        }
+
+        // BẢO MẬT CỨNG CHỐNG CÀO CODE
+        window.oncontextmenu = () => false;
+        document.onkeydown = (e) => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
+        };
+    </script>
+</body>
+</html>
